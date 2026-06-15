@@ -383,4 +383,10 @@ button, .swiper {
   .massive-text { font-size: 3rem; }
   .mobile-title { font-size: 2.5rem; }
   .glass-card { padding: 2rem; }
+  
+  /* Zoom out the 3D models so hands don't get cut off on narrow screens */
+  spline-viewer {
+    transform: scale(0.80);
+    transform-origin: center bottom;
+  }
 }

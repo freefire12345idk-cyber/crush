@@ -151,10 +151,8 @@
 
   <!-- Final Decision Overlay -->
   <div id="final-decision" class="hidden-ui">
-    <!-- 2nd Spline Model (Robot with Yes/No) -->
-    <div class="spline-container" style="z-index: 1; width: 100%; height: 100%;">
-      <spline-viewer id="interactive-spline" url="https://prod.spline.design/ZdUCFRKMLJFpco3R/scene.splinecode"
-        loading="lazy"></spline-viewer>
+    <!-- 2nd Spline Model injected dynamically via JS to save GPU -->
+    <div class="spline-container" id="final-spline-container" style="z-index: 1; width: 100%; height: 100%;">
       <div class="logo-mask">
         <span class="cool-name">Utkarsh</span>
       </div>

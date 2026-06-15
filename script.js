@@ -39,17 +39,24 @@ function initThreeJS() {
 
   composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-  bloomPass.threshold = 0;
-  bloomPass.strength = 1.2;
-  bloomPass.radius = 0.5;
-  composer.addPass(bloomPass);
-
+  
+  const isMobile = window.innerWidth < 768;
+  // Only add heavy Bloom effect on Desktop to save Mobile GPU
+  if (!isMobile) {
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+    bloomPass.threshold = 0;
+    bloomPass.strength = 1.2;
+    bloomPass.radius = 0.5;
+    composer.addPass(bloomPass);
+  }
+  
   const heartGeometry = new THREE.BufferGeometry();
   const positions = [];
   const sizes = [];
-
-  for (let i = 0; i < 800; i++) {
+  
+  // Reduce particle count significantly on mobile
+  const particleCount = isMobile ? 150 : 800;
+  for (let i = 0; i < particleCount; i++) {
     positions.push(
       (Math.random() - 0.5) * 1500,
       (Math.random() - 0.5) * 1500,
@@ -57,7 +64,7 @@ function initThreeJS() {
     );
     sizes.push(Math.random() * 2);
   }
-
+  
   heartGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
   heartGeometry.setAttribute('size', new THREE.Float32BufferAttribute(sizes, 1));
 
@@ -89,7 +96,10 @@ function initThreeJS() {
   animateThreeJS();
 }
 
+let isThreeJsRunning = true;
+
 function animateThreeJS() {
+  if (!isThreeJsRunning) return; // Completely pause GPU rendering when not needed
   requestAnimationFrame(animateThreeJS);
   if (particles) {
     particles.rotation.x += 0.0005;
@@ -226,32 +236,39 @@ function initInteractions() {
 
   // "Click to Reveal" Logic
   revealBtn.addEventListener('click', () => {
-    // Fade out everything that was scrolled
+    // 1. Shut down the background Three.js entirely to give 100% GPU to the final robot
+    isThreeJsRunning = false;
+    const bgCanvas = document.getElementById('threejs-canvas');
+    if (bgCanvas) bgCanvas.style.display = 'none';
+
+    // 2. Dynamically inject the 2nd robot into the HTML only now
+    const finalSplineContainer = document.getElementById('final-spline-container');
+    if (finalSplineContainer) {
+      finalSplineContainer.insertAdjacentHTML('afterbegin', '<spline-viewer id="interactive-spline" url="https://prod.spline.design/ZdUCFRKMLJFpco3R/scene.splinecode"></spline-viewer>');
+      
+      // Wake up Spline raycaster after injection
+      setTimeout(() => {
+        const interactiveSpline = document.getElementById('interactive-spline');
+        if (interactiveSpline) {
+          interactiveSpline.addEventListener('mouseDown', () => {});
+        }
+      }, 500);
+    }
+
+    // 3. Fade out everything that was scrolled
     gsap.to(scrollContainer, {
-      opacity: 0,
+      opacity: 0, 
       duration: 1,
       onComplete: () => {
-        scrollContainer.style.display = 'none'; // Completely hide scrolling elements
-
-        // Hide the first Spline model
+        scrollContainer.style.display = 'none'; 
         const mainSpline = document.getElementById('main-spline');
         if (mainSpline) mainSpline.style.display = 'none';
-
-        // Show Yes/No Overlay over the new robot
+        
         finalDecision.classList.add('active');
-
-        // Ensure new robot fades in smoothly
         gsap.fromTo('#final-decision .spline-container', { opacity: 0 }, { opacity: 1, duration: 1 });
       }
     });
   });
-
-  // Add a dummy listener to force Spline's internal raycaster to wake up!
-  // Without this, Spline disables hover/interactions to save CPU.
-  const interactiveSpline = document.getElementById('interactive-spline');
-  if (interactiveSpline) {
-    interactiveSpline.addEventListener('mouseDown', () => { });
-  }
 
   // Strict Mathematical Hit Testing (No HTML Overlays required)
   document.addEventListener('mouseup', async (e) => {
