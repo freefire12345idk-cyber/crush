@@ -29,29 +29,21 @@ let scene, camera, renderer, composer, particles;
 let mouseX = 0, mouseY = 0;
 
 function initThreeJS() {
-  const isMobile = window.innerWidth < 768;
-  
-  if (isMobile) {
-    const bgCanvas = document.getElementById('threejs-canvas');
-    if (bgCanvas) bgCanvas.style.display = 'none';
-    isThreeJsRunning = false;
-    return; // Abort all Three.js setup to completely save mobile GPU
-  }
-
   const canvas = document.getElementById('threejs-canvas');
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
   renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  // Cap pixel ratio at 1 on mobile (if we didn't abort), 2 on desktop to save fill rate
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
   composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   
-  // Only add heavy Bloom effect on Desktop
-  const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+  const isMobile = window.innerWidth < 768;
+  // Only add heavy Bloom effect on Desktop to save Mobile GPU
+  if (!isMobile) {
+    const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
     bloomPass.threshold = 0;
     bloomPass.strength = 1.2;
     bloomPass.radius = 0.5;
@@ -62,7 +54,8 @@ function initThreeJS() {
   const positions = [];
   const sizes = [];
   
-  const particleCount = 800; // Desktop only now
+  // Reduce particle count significantly on mobile
+  const particleCount = isMobile ? 150 : 800;
   for (let i = 0; i < particleCount; i++) {
     positions.push(
       (Math.random() - 0.5) * 1500,
@@ -269,8 +262,7 @@ function initInteractions() {
       onComplete: () => {
         scrollContainer.style.display = 'none'; 
         const mainSpline = document.getElementById('main-spline');
-        // Physically remove the element from DOM so the browser stops rendering its 3D WebGL context
-        if (mainSpline) mainSpline.remove(); 
+        if (mainSpline) mainSpline.style.display = 'none';
         
         finalDecision.classList.add('active');
         gsap.fromTo('#final-decision .spline-container', { opacity: 0 }, { opacity: 1, duration: 1 });
