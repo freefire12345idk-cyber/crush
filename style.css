@@ -382,7 +382,16 @@ button, .swiper {
   .final-question { font-size: 2.5rem; }
   .massive-text { font-size: 3rem; }
   .mobile-title { font-size: 2.5rem; }
-  .glass-card { padding: 2rem; }
+  
+  .glass-card { 
+    padding: 2rem; 
+    backdrop-filter: none !important; /* Huge mobile GPU fix */
+    background: rgba(20, 20, 20, 0.85) !important;
+  }
+
+  #main-spline {
+    pointer-events: none; /* Prevents scroll thumb from waking up raycaster */
+  }
   
   /* Zoom out the 3D models so hands don't get cut off on narrow screens */
   spline-viewer {

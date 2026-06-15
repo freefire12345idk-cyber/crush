@@ -32,15 +32,18 @@ function initThreeJS() {
   const canvas = document.getElementById('threejs-canvas');
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 100;
 
-  renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+  const isMobile = window.innerWidth < 768;
+
+  // Turn off antialiasing and force 1x pixel ratio on mobile to drastically reduce GPU load
+  renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: !isMobile, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
+  renderer.setPixelRatio(isMobile ? 1 : Math.min(window.devicePixelRatio, 2));
+  
   composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
   
-  const isMobile = window.innerWidth < 768;
   // Only add heavy Bloom effect on Desktop to save Mobile GPU
   if (!isMobile) {
     const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
@@ -54,8 +57,8 @@ function initThreeJS() {
   const positions = [];
   const sizes = [];
   
-  // Reduce particle count significantly on mobile
-  const particleCount = isMobile ? 150 : 800;
+  // Reduce particle count significantly on mobile (from 800 to 50!)
+  const particleCount = isMobile ? 50 : 800;
   for (let i = 0; i < particleCount; i++) {
     positions.push(
       (Math.random() - 0.5) * 1500,
@@ -101,14 +104,25 @@ let isThreeJsRunning = true;
 function animateThreeJS() {
   if (!isThreeJsRunning) return; // Completely pause GPU rendering when not needed
   requestAnimationFrame(animateThreeJS);
+  
+  const isMobile = window.innerWidth < 768;
+  
   if (particles) {
     particles.rotation.x += 0.0005;
     particles.rotation.y += 0.001;
-    camera.position.x += (mouseX - camera.position.x) * 0.05;
-    camera.position.y += (-mouseY - camera.position.y) * 0.05;
-    camera.lookAt(scene.position);
+    // Skip camera easing on mobile to save CPU cycles
+    if (!isMobile) {
+      camera.position.x += (mouseX - camera.position.x) * 0.05;
+      camera.position.y += (-mouseY - camera.position.y) * 0.05;
+      camera.lookAt(scene.position);
+    }
   }
-  composer.render();
+  
+  if (isMobile) {
+    renderer.render(scene, camera); // Bypass the massive EffectComposer completely on mobile
+  } else {
+    composer.render();
+  }
 }
 
 /* =========================================
