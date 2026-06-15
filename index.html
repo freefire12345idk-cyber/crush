@@ -1,13 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>For My Special Someone 💖</title>
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+  <title>A Question For You...</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Outfit:wght@200;300;400;600&display=swap"
+    rel="stylesheet" />
+
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css" />
+
   <!-- Spline Viewer -->
-  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.72/build/spline-viewer.js"></script>
+  <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.97/build/spline-viewer.js"></script>
+
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <!-- Three.js Import Map -->
   <script type="importmap">
     {
@@ -17,429 +34,151 @@
       }
     }
   </script>
-  <style>
-    /* Global Styles */
-    body {
-      margin: 0;
-      font-family: 'Dancing Script', cursive;
-      background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
-      overflow-x: hidden;
-      position: relative;
-    }
-    /* Header */
-    .header {
-      text-align: center;
-      padding: 1rem;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(5px);
-    }
-    .header h1 {
-      color: #ff1493;
-      font-size: 3rem;
-      margin: 0;
-    }
-    /* Navigation Bar */
-    .nav-bar {
-      position: fixed;
-      bottom: 1rem;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 1rem;
-      z-index: 1000;
-    }
-    .nav-btn {
-      padding: 0.8rem 1.5rem;
-      border: none;
-      border-radius: 25px;
-      background: rgba(255, 255, 255, 0.9);
-      color: #ff1493;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(5px);
-    }
-    .nav-btn:hover {
-      background: #ff1493;
-      color: white;
-      transform: scale(1.1);
-    }
-    /* Section Styling */
-    .section {
-      display: none;
-      opacity: 0;
-      animation: fadeIn 1s forwards;
-      padding: 2rem;
-      max-width: 800px;
-      margin: 2rem auto;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    /* 3D Model Containers */
-    .model-container {
-      display: none;
-      position: relative;
-      width: 100%;
-      height: 70vh;
-      transition: opacity 0.5s ease;
-    }
-    .model-container.active {
-      display: block;
-    }
-    /* Love Letter & Shayari */
-    .love-letter p {
-      font-size: 1.2rem;
-      line-height: 1.6;
-      text-align: justify;
-      margin-bottom: 1rem;
-    }
-    .shayari-box {
-      background: #fff5f7;
-      padding: 2rem;
-      margin: 2rem 0;
-      border-radius: 15px;
-      border-left: 5px solid #ff1493;
-      transform: rotate(-1deg);
-    }
-    /* Gallery Grid */
-    .gallery {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 15px;
-      padding: 20px;
-    }
-    .gallery-item {
-      overflow: hidden;
-      border-radius: 15px;
-      transition: transform 0.3s ease;
-    }
-    .gallery-item:hover {
-      transform: scale(1.05);
-    }
-    /* Game Container */
-    .game-container {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 2rem;
-      border-radius: 15px;
-      margin: 2rem auto;
-      max-width: 600px;
-      text-align: center;
-    }
-    /* Heart Progress (Love Calculator) */
-    .heart-progress {
-      width: 200px;
-      height: 200px;
-      margin: 20px auto;
-      position: relative;
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); }
-    }
-    /* Three.js Canvas (Background) */
-    #threejs-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      z-index: -1;
-    }
-    /* Heart Trail Effect */
-    .heart-trail {
-      position: absolute;
-      font-size: 24px;
-      color: #ff1493;
-      pointer-events: none;
-      animation: float 1s ease-out forwards;
-    }
-    @keyframes float {
-      0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-      100% { transform: translate(-50%, -150%) scale(0.5); opacity: 0; }
-    }
-    /* Special Message Easter Egg */
-    .hidden-message {
-      display: none;
-      text-align: center;
-      padding: 2rem;
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      margin: 2rem;
-    }
-  </style>
+
 </head>
+
 <body>
-  <!-- Three.js Canvas for Background Particles -->
-  <canvas id="threejs-canvas"></canvas>
-  
-  <!-- Header -->
-  <div class="header">
-    <h1>For My Special Someone 💖</h1>
-  </div>
-  
-  <!-- Navigation Bar -->
-  <nav class="nav-bar">
-    <button class="nav-btn" onclick="showSection('story')">Our Story</button>
-    <button class="nav-btn" onclick="showSection('loveLetter')">Love Letter</button>
-    <button class="nav-btn" onclick="showSection('gallery')">Gallery</button>
-    <button class="nav-btn" onclick="showSection('games')">Games</button>
-    <button class="nav-btn" onclick="showSection('poetry')">Poetry</button>
-  </nav>
-  
-  <!-- Our Story Section with 3D Models -->
-  <div id="story" class="section">
-    <!-- 3D Model Containers -->
-    <div class="model-container active" id="model1">
-      <spline-viewer url="https://prod.spline.design/6Bo9fO4cRa-ea2uN/scene.splinecode" loading="eager"></spline-viewer>
-    </div>
-    <div class="model-container" id="model2">
-      <spline-viewer url="https://prod.spline.design/vlC1xSEwmff75Zuz/scene.splinecode"></spline-viewer>
-    </div>
-    <div class="model-container" id="model3">
-      <spline-viewer url="https://prod.spline.design/7r0rVOiS9TgaWyvO/scene.splinecode"></spline-viewer>
-    </div>
-    <!-- Model Navigation Buttons -->
-    <div style="text-align: center; margin-top: 1rem;">
-      <button class="nav-btn" onclick="showModel(1)">Our Beginning</button>
-      <button class="nav-btn" onclick="showModel(2)">Growing Love</button>
-      <button class="nav-btn" onclick="showModel(3)">Forever Together</button>
-    </div>
-  </div>
-  
-  <!-- Love Letter Section -->
-  <div id="loveLetter" class="section">
-    <div class="love-letter">
-      <h2>My Dearest 💌,</h2>
-      <p>I hope this letter finds you in the best of spirits...</p>
-      <p>I have watched you from afar, as one might gaze at the night sky, entranced by its quiet splendor. To me, you are the Moon—casting a tender, radiant light that soothes my restless heart. I am but a simple admirer, grateful beyond measure for the privilege of knowing you exist.</p>
-      <p>Your eyes, like flower dreams, bloom with hope and beauty, drawing me in with every glance. Your hair flows like a gentle stream catching the light, and your skin glows with a warmth that speaks of timeless grace.</p>
-      <p>To me, you are a diamond—rare, dazzling, and far too exquisite for someone as ordinary as myself.</p>
-    </div>
-    <div class="shayari-box">
-      <h3>💘 Butterflies Guaranteed</h3>
-      <p>"Kya mere jeene ka maksad ho tum,<br>Ya sirf sanso ka ehsaas ho tum 😊"</p>
-      <p>"Kya meri zindagi ka ek padao,<br>Ya ek nai shuruwaat ho tum ❤️"</p>
-      <p>"Kya mere dil ka ek eklauta khwab ho tum 🥰"</p>
-    </div>
-  </div>
-  
-  <!-- Gallery Section -->
-  <div id="gallery" class="section">
-    <h2 style="text-align: center;">Our Memories</h2>
-    <div class="gallery">
-      <div class="gallery-item">
-        <img src="her-photo1.jpg" alt="Memory 1" style="width:100%;" />
+
+  <!-- Fixed Background Elements -->
+  <div id="fixed-bg">
+    <!-- Three.js Canvas for Particles -->
+    <canvas id="threejs-canvas"></canvas>
+    <!-- Dark Romantic Gradient -->
+    <div class="background-gradient"></div>
+    <!-- 3D Spline Model (Initial Journey) -->
+    <div class="spline-container" id="main-spline">
+      <spline-viewer url="https://prod.spline.design/s-5Ld2GaJFUcZQAb/scene.splinecode" loading="eager"></spline-viewer>
+      <!-- Mask to hide Spline Logo -->
+      <div class="logo-mask">
+        <span class="cool-name">Utkarsh</span>
       </div>
-      <div class="gallery-item">
-        <img src="her-photo2.jpg" alt="Memory 2" style="width:100%;" />
+    </div>
+  </div>
+
+  <!-- The Scrollytelling Container -->
+  <main id="scroll-container">
+
+    <!-- Chapter 0: Hero -->
+    <section id="hero" class="scroll-section"
+      style="justify-content: space-between; padding-top: 8vh; padding-bottom: 8vh;">
+      <div class="hero-top" style="text-align: left; padding-left: 5vw; width: 100%;">
+        <h1 class="hero-title glow-text"
+          style="font-size: 12vw; letter-spacing: 5px; opacity: 0.9; margin: 0; line-height: 1;">Hello..</h1>
       </div>
-      <!-- Add more images as desired -->
+      <div class="hero-bottom" style="text-align: center; z-index: 20; width: 100%;">
+        <p class="hero-subtitle" style="font-size: 1.5rem; color: #e0e0e0; font-weight: 300; margin: 0;">Scroll down for
+          a surprise ↓</p>
+      </div>
+    </section>
+
+    <!-- Chapter 1: The Confession -->
+    <section id="confession" class="scroll-section">
+      <div class="glass-card confession-card">
+        <h2 class="section-title">My Dearest,</h2>
+        <div class="love-letter">
+          <p class="reveal-text">I have watched you from afar, entranced by your quiet splendor.</p>
+          <p class="reveal-text">To me, you are the Moon—casting a tender, radiant light that soothes my restless heart.
+            I am but a simple admirer, grateful beyond measure for the privilege of knowing you exist.</p>
+          <p class="reveal-text">Your eyes, like flower dreams, bloom with hope and beauty, drawing me in with every
+            glance. Your skin glows with a warmth that speaks of timeless grace.</p>
+          <p class="reveal-text">You are a diamond—rare, dazzling, and absolutely exquisite.</p>
+        </div>
+
+        <!-- Restored Butterflies Guaranteed Box -->
+        <div class="shayari-box reveal-text mt-4">
+          <h3>💘 Butterflies Guaranteed</h3>
+          <p>"Kya mere jeene ka maksad ho tum,<br>Ya sirf sanso ka ehsaas ho tum 😊"</p>
+          <p>"Kya meri zindagi ka ek padao,<br>Ya ek nai shuruwaat ho tum ❤️"</p>
+          <p>"Kya mere dil ka ek eklauta khwab ho tum 🥰"</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chapter 2: The Gallery -->
+    <section id="memories" class="scroll-section">
+      <div class="gallery-wrapper">
+        <h2 class="section-title text-center glow-text">Qt</h2>
+        <!-- Swiper -->
+        <div class="swiper mySwiper">
+          <div class="swiper-wrapper">
+            <div class="swiper-slide"><img
+                src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=600&auto=format&fit=crop"
+                alt="Memory" /></div>
+            <div class="swiper-slide"><img
+                src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=600&auto=format&fit=crop"
+                alt="Memory" /></div>
+            <div class="swiper-slide"><img
+                src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=600&auto=format&fit=crop"
+                alt="Memory" /></div>
+            <div class="swiper-slide"><img
+                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=600&auto=format&fit=crop"
+                alt="Memory" /></div>
+            <div class="swiper-slide"><img
+                src="https://images.unsplash.com/photo-1510627498534-cf7e9002facc?q=80&w=600&auto=format&fit=crop"
+                alt="Memory" /></div>
+            <!-- Duplicated for flawless looping on large screens -->
+            <div class="swiper-slide"><img
+                src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=600&auto=format&fit=crop"
+                alt="Memory" /></div>
+            <div class="swiper-slide"><img
+                src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=600&auto=format&fit=crop"
+                alt="Memory" /></div>
+            <div class="swiper-slide"><img
+                src="https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=600&auto=format&fit=crop"
+                alt="Memory" /></div>
+            <div class="swiper-slide"><img
+                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=600&auto=format&fit=crop"
+                alt="Memory" /></div>
+            <div class="swiper-slide"><img
+                src="https://images.unsplash.com/photo-1510627498534-cf7e9002facc?q=80&w=600&auto=format&fit=crop"
+                alt="Memory" /></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chapter 3: The Proposal -->
+    <section id="proposal" class="scroll-section">
+      <div class="proposal-content text-center glass-card">
+        <h2 class="final-question">I only have one question for you...</h2>
+        <div class="proposal-actions">
+          <button id="reveal-btn" class="glow-btn">Click to Reveal 💖</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Final Decision Overlay -->
+  <div id="final-decision" class="hidden-ui">
+    <!-- 2nd Spline Model (Robot with Yes/No) -->
+    <div class="spline-container" style="z-index: 1; width: 100%; height: 100%;">
+      <spline-viewer id="interactive-spline" url="https://prod.spline.design/ZdUCFRKMLJFpco3R/scene.splinecode"
+        loading="lazy"></spline-viewer>
+      <div class="logo-mask">
+        <span class="cool-name">Utkarsh</span>
+      </div>
     </div>
   </div>
-  
-  <!-- Games Section -->
-  <div id="games" class="section">
-    <!-- Love Calculator -->
-    <div class="game-container">
-      <h2>Our Love Meter 💘</h2>
-      <div class="heart-progress"></div>
-      <button class="nav-btn" onclick="calculateLove()">Check Compatibility</button>
-      <p id="loveResult"></p>
-    </div>
-    <!-- Q&A Game -->
-    <div class="game-container">
-      <h2>How Well Do You Know Me? ❓</h2>
-      <div id="question-container"></div>
-      <button class="nav-btn" onclick="nextQuestion()">Next Question</button>
-    </div>
+
+  <div id="success-screen" class="hidden-ui">
+    <h1 class="glow-text massive-text">She said YES! 🎉💖</h1>
+    <p class="sub-response">I promise to make you the happiest.</p>
   </div>
-  
-  <!-- Poetry Section -->
-  <div id="poetry" class="section">
-    <div class="shayari-box" onmouseover="this.style.transform='rotate(2deg) scale(1.05)'" onmouseout="this.style.transform='rotate(-1deg) scale(1)'">
-      <h3>My Favorite Shayari 💌</h3>
-      <p>Teri muskurahat mein chupa hai jahan, meri zindagi ka ehsaas ho tum... 🌸</p>
-    </div>
-  </div>
-  
-  <!-- Hidden Special Message (Easter Egg) -->
-  <div id="special-message" class="hidden-message">
-    <h2>Will You Be Mine Forever? 💍</h2>
-    <button class="nav-btn" onclick="alert('You made my heart skip a beat!')">Click to Answer</button>
-  </div>
-  
+
   <!-- Background Music -->
   <audio id="background-music" loop>
     <source src="Apna Bana Le (Bhediya) - (Raag.Fm).mp3" type="audio/mpeg" />
-    Your browser does not support the audio element.
   </audio>
-  
+
   <!-- Scripts -->
-  <!-- Three.js Initialization for Heart Particles -->
-  <script type="module">
-    import * as THREE from 'three';
-    import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-    import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-    import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-    
-    let scene, camera, renderer, composer;
-    
-    function initThreeJS() {
-      const canvas = document.getElementById('threejs-canvas');
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-      renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      
-      composer = new EffectComposer(renderer);
-      composer.addPass(new RenderPass(scene, camera));
-      const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-      composer.addPass(bloomPass);
-      
-      // Create heart particles
-      const heartGeometry = new THREE.BufferGeometry();
-      const positions = [];
-      for (let i = 0; i < 1000; i++) {
-        positions.push(
-          Math.random() * 1000 - 500,
-          Math.random() * 1000 - 500,
-          Math.random() * 1000 - 500
-        );
-      }
-      heartGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-      
-      const heartMaterial = new THREE.PointsMaterial({
-        size: 2,
-        color: 0xff1493,
-        transparent: true,
-        opacity: 0.5
-      });
-      
-      const particles = new THREE.Points(heartGeometry, heartMaterial);
-      scene.add(particles);
-      
-      camera.position.z = 100;
-      animate();
-    }
-    
-    function animate() {
-      requestAnimationFrame(animate);
-      if (scene.children[0]) {
-        scene.children[0].rotation.x += 0.001;
-        scene.children[0].rotation.y += 0.001;
-      }
-      composer.render();
-    }
-    
-    initThreeJS();
-    
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-  </script>
-  
-  <!-- Main JavaScript for Navigation, Games, Music, and Effects -->
-  <script>
-    // Show a specific section while hiding others
-    function showSection(sectionId) {
-      document.querySelectorAll('.section').forEach(section => {
-        section.style.display = 'none';
-        section.style.opacity = 0;
-      });
-      const activeSection = document.getElementById(sectionId);
-      activeSection.style.display = 'block';
-      setTimeout(() => { activeSection.style.opacity = 1; }, 10);
-    }
-    
-    // Switch between 3D model containers in the "Our Story" section
-    function showModel(modelNumber) {
-      document.querySelectorAll('.model-container').forEach(container => {
-        container.classList.remove('active');
-      });
-      document.getElementById('model' + modelNumber).classList.add('active');
-    }
-    
-    // Love Calculator Functionality
-    function calculateLove() {
-      const lovePercentage = Math.floor(Math.random() * 41) + 60; // Generates a number between 60 and 100
-      document.getElementById('loveResult').innerHTML = `Our Love Compatibility: ${lovePercentage}% 💖`;
-    }
-    
-    // Q&A Game Logic
-    const questions = [
-      {
-        question: "What's my favorite thing about you?",
-        answers: ["Your Smile", "Your Kindness", "Your Eyes"],
-        correct: 2
-      },
-      {
-        question: "Where would I take you on a dream date?",
-        answers: ["Moonlit Beach", "Mountain Top", "Flower Garden"],
-        correct: 0
-      }
-    ];
-    let currentQuestion = 0;
-    
-    function displayQuestion() {
-      const container = document.getElementById('question-container');
-      container.innerHTML = `
-        <div style="font-size:1.3rem; margin-bottom:1rem; color:#ff1493;">${questions[currentQuestion].question}</div>
-        ${questions[currentQuestion].answers.map((answer, index) => `<button class="nav-btn" style="margin:0.5rem;" onclick="checkAnswer(${index})">${answer}</button>`).join('')}
-      `;
-    }
-    
-    function checkAnswer(selectedIndex) {
-      if (selectedIndex === questions[currentQuestion].correct) {
-        alert("Correct! You know me so well 💖");
-      } else {
-        alert("Almost there! Let's try another one 😊");
-      }
-      nextQuestion();
-    }
-    
-    function nextQuestion() {
-      currentQuestion = (currentQuestion + 1) % questions.length;
-      displayQuestion();
-    }
-    
-    // Initialize the first question on page load
-    displayQuestion();
-    
-    // Heart Trail Effect on Mouse Move
-    document.addEventListener('mousemove', (e) => {
-      const heart = document.createElement('div');
-      heart.className = 'heart-trail';
-      heart.innerHTML = '❤️';
-      heart.style.left = `${e.pageX}px`;
-      heart.style.top = `${e.pageY}px`;
-      document.body.appendChild(heart);
-      setTimeout(() => { heart.remove(); }, 1000);
-    });
-    
-    // Background Music: Play on first user click
-    const bgMusic = document.getElementById('background-music');
-    document.addEventListener('click', () => {
-      bgMusic.play();
-    }, { once: true });
-    
-    // Easter Egg: Reveal special message after 7 clicks anywhere on the page
-    let clickCount = 0;
-    document.addEventListener('click', () => {
-      clickCount++;
-      if (clickCount === 7) {
-        document.getElementById('special-message').style.display = 'block';
-      }
-    });
-  </script>
+  <!-- GSAP for Butter-smooth animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- Swiper JS -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script type="module" src="script.js"></script>
 </body>
+
 </html>

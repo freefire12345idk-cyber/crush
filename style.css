@@ -1,0 +1,386 @@
+/* Base Variables for Premium Dark Romantic Theme */
+:root {
+  --bg-color-1: #0f0c29;
+  --bg-color-2: #302b63;
+  --bg-color-3: #24243e;
+  --accent-glow: #ff1493;
+  --accent-light: #ff69b4;
+  --text-primary: #ffffff;
+  --text-secondary: #e0e0e0;
+  --glass-bg: rgba(20, 15, 40, 0.4);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  color: var(--text-primary);
+  background-color: var(--bg-color-1);
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .dancing-script {
+  font-family: 'Dancing Script', cursive;
+  font-weight: 700;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.mt-4 {
+  margin-top: 2rem;
+}
+
+/* Typography & Glows */
+.glow-text {
+  text-shadow: 0 0 15px rgba(255, 20, 147, 0.8), 0 0 30px rgba(255, 20, 147, 0.5);
+  color: #fff;
+}
+
+/* Fixed Background */
+#fixed-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1;
+}
+
+.background-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, var(--bg-color-2) 0%, var(--bg-color-1) 100%);
+  opacity: 0.8;
+  z-index: 1;
+}
+
+#threejs-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.spline-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+}
+
+/* Mask to hide Spline Logo and show Cool Name */
+.logo-mask {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  z-index: 10;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
+  padding: 5px 15px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 20, 147, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.cool-name {
+  font-family: 'Dancing Script', cursive;
+  font-size: 2rem;
+  font-weight: 700;
+  /* Romantic warm colors: Red to Pink to Gold */
+  background: linear-gradient(45deg, #ff0844 0%, #ffb199 50%, #ff1493 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 15px rgba(255, 20, 147, 0.5); /* Romantic pink glow */
+  letter-spacing: 2px;
+}
+
+/* Scrollytelling Sections */
+#scroll-container {
+  position: relative;
+  /* Removed z-index to allow interleaving with absolute 3D elements */
+  width: 100%;
+  pointer-events: none; 
+}
+
+.scroll-section {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 2rem;
+  pointer-events: none;
+  z-index: 10; /* Default above robot */
+}
+
+#hero {
+  z-index: 2; /* Place behind the z-index:3 robot for Magazine effect */
+}
+
+/* ONLY enable pointer events for things that actually need clicks (Buttons, Swiper) */
+button, .swiper {
+  pointer-events: auto !important;
+}
+
+/* Hero Section */
+.hero-content {
+  text-align: center;
+  z-index: 20;
+  /* Push text higher so it doesn't overlap robot face on mobile */
+  padding-bottom: 20vh; 
+}
+
+.hero-title {
+  font-size: 6rem;
+  letter-spacing: 2px;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--text-secondary);
+  opacity: 0.8;
+}
+
+.scroll-indicator {
+  position: absolute;
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  animation: bounce 2s infinite;
+  opacity: 0.7;
+}
+
+.scroll-indicator span {
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.scroll-indicator .arrow {
+  font-size: 1.5rem;
+  margin-top: 5px;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0) translateX(-50%); }
+  40% { transform: translateY(-15px) translateX(-50%); }
+  60% { transform: translateY(-7px) translateX(-50%); }
+}
+
+/* Confession Section */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  max-width: 800px;
+  width: 100%;
+}
+
+.confession-card .section-title {
+  font-size: 3rem;
+  color: var(--accent-light);
+  margin-bottom: 1.5rem;
+}
+
+.love-letter p {
+  font-size: 1.25rem;
+  line-height: 1.8;
+  margin-bottom: 1.2rem;
+  text-align: justify;
+  letter-spacing: 0.5px;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* Shayari Box */
+.shayari-box {
+  background: rgba(255, 20, 147, 0.05);
+  border-left: 4px solid var(--accent-glow);
+  padding: 1.5rem;
+  border-radius: 0 15px 15px 0;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.shayari-box h3 {
+  color: var(--accent-light);
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-family: 'Dancing Script', cursive;
+}
+
+.shayari-box p {
+  font-style: italic;
+  color: #ccc;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+/* Memories Section */
+.gallery-wrapper {
+  width: 100%;
+  max-width: 1200px;
+}
+
+.gallery-wrapper .section-title {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+}
+
+/* Swiper styling for cinematic loop */
+.swiper {
+  width: 100%;
+  padding-top: 20px;
+  padding-bottom: 50px;
+}
+
+.swiper-wrapper {
+  transition-timing-function: linear !important;
+  will-change: transform;
+}
+
+.swiper-slide {
+  background-position: center;
+  background-size: cover;
+  width: 300px;
+  height: 400px;
+  border-radius: 15px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+  overflow: hidden;
+  opacity: 0.6;
+  transform: translateZ(0) scale(0.85); /* Hardware accel */
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  will-change: transform, opacity;
+}
+
+.swiper-slide-active {
+  opacity: 1;
+  transform: translateZ(0) scale(1); /* Full size when active */
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Proposal Section */
+.final-question {
+  font-size: 4rem;
+  color: var(--text-primary);
+  margin-bottom: 3rem;
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.glow-btn {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  padding: 1rem 3rem;
+  border: 1px solid var(--accent-light);
+  border-radius: 50px;
+  background: rgba(255, 20, 147, 0.2);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  backdrop-filter: blur(5px);
+}
+
+.glow-btn:hover {
+  background: var(--accent-glow);
+  box-shadow: 0 0 30px rgba(255, 20, 147, 0.8);
+  transform: scale(1.05);
+}
+
+/* Final Decision / Overlay UIs */
+.hidden-ui {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.5s ease;
+}
+
+.hidden-ui.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#final-decision {
+  /* No background so we can see the robot */
+}
+
+#success-screen {
+  background: radial-gradient(circle at center, #1a000d 0%, #000 100%);
+}
+
+.massive-text {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.sub-response {
+  font-size: 1.5rem;
+  color: var(--accent-light);
+  font-style: italic;
+}
+
+/* Heart Trail */
+.heart-trail {
+  position: absolute;
+  font-size: 24px;
+  color: #ff1493;
+  pointer-events: none;
+  z-index: 9998;
+  animation: floatUpAndFade 1s ease-out forwards;
+}
+
+@keyframes floatUpAndFade {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -150%) scale(0.5); opacity: 0; }
+}
+
+@media (max-width: 768px) {
+  .hero-title { font-size: 4rem; }
+  .final-question { font-size: 2.5rem; }
+  .massive-text { font-size: 3rem; }
+  .mobile-title { font-size: 2.5rem; }
+  .glass-card { padding: 2rem; }
+}
