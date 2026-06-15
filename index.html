@@ -126,6 +126,11 @@
 
   <!-- Final Decision Overlay -->
   <div id="final-decision" class="hidden-ui">
+    <!-- Loading Screen (Hides WebGL initialization jitter) -->
+    <div id="spline-loading" class="spline-loading">
+      <h2 class="glowing-text">Preparing a surprise for you... 💖</h2>
+    </div>
+
     <!-- 2nd Spline Model injected dynamically via JS to save GPU -->
     <div class="spline-container" id="final-spline-container" style="z-index: 1; width: 100%; height: 100%;">
       <div class="logo-mask">

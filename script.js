@@ -243,16 +243,22 @@ function initInteractions() {
 
     // 2. Dynamically inject the 2nd robot into the HTML only now
     const finalSplineContainer = document.getElementById('final-spline-container');
+    const loadingScreen = document.getElementById('spline-loading');
+    
     if (finalSplineContainer) {
+      finalSplineContainer.style.opacity = '0'; // Keep hidden during jitter
       finalSplineContainer.insertAdjacentHTML('afterbegin', '<spline-viewer id="interactive-spline" url="https://prod.spline.design/ZdUCFRKMLJFpco3R/scene.splinecode"></spline-viewer>');
       
-      // Wake up Spline raycaster after injection
-      setTimeout(() => {
-        const interactiveSpline = document.getElementById('interactive-spline');
-        if (interactiveSpline) {
-          interactiveSpline.addEventListener('mouseDown', () => {});
-        }
-      }, 500);
+      // Wake up Spline raycaster ONLY ON DESKTOP. Mobile doesn't have hover, so this kills CPU for no reason!
+      const isMobile = window.innerWidth < 768;
+      if (!isMobile) {
+        setTimeout(() => {
+          const interactiveSpline = document.getElementById('interactive-spline');
+          if (interactiveSpline) {
+            interactiveSpline.addEventListener('mouseDown', () => {});
+          }
+        }, 500);
+      }
     }
 
     // 3. Fade out everything that was scrolled
@@ -264,8 +270,20 @@ function initInteractions() {
         const mainSpline = document.getElementById('main-spline');
         if (mainSpline) mainSpline.style.display = 'none';
         
+        // Show the final decision container (which currently only shows the Loading Screen)
         finalDecision.classList.add('active');
-        gsap.fromTo('#final-decision .spline-container', { opacity: 0 }, { opacity: 1, duration: 1 });
+        
+        // Wait 3.5 seconds for WebGL to compile shaders and finish its glitchy zoom-in
+        setTimeout(() => {
+           // Fade out loading screen
+           if(loadingScreen) loadingScreen.style.opacity = '0';
+           
+           // Fade in the now-stable 3D robot
+           gsap.fromTo(finalSplineContainer, { opacity: 0 }, { opacity: 1, duration: 1.5 });
+           
+           // Clean up loading screen
+           setTimeout(() => { if(loadingScreen) loadingScreen.style.display = 'none'; }, 1000);
+        }, 3500);
       }
     });
   });
