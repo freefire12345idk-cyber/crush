@@ -230,6 +230,21 @@ async function saveResponseToSupabase(response) {
 }
 
 function initInteractions() {
+  // Global Loader Logic
+  const globalLoader = document.getElementById('global-loader');
+  const mainSplineViewer = document.querySelector('#main-spline spline-viewer');
+
+  const hideLoader = () => {
+    if (!globalLoader) return;
+    globalLoader.style.opacity = '0';
+    setTimeout(() => { globalLoader.style.display = 'none'; }, 1000);
+  };
+
+  if (mainSplineViewer) {
+    mainSplineViewer.addEventListener('load', hideLoader);
+  }
+  setTimeout(hideLoader, 6000); // Fallback to ensure loader doesn't hang forever
+
   const bgMusic = document.getElementById('background-music');
   document.addEventListener('click', () => {
     if (bgMusic.paused) {
@@ -313,6 +328,36 @@ function initInteractions() {
       if (e.clientX < (centerX - deadzone)) {
         await saveResponseToSupabase('Yes');
         for (let i = 0; i < 60; i++) { createExplosionHeart(); }
+        
+        // --- Confetti Explosion Effect ---
+        if (typeof confetti !== 'undefined') {
+          const duration = 5 * 1000;
+          const animationEnd = Date.now() + duration;
+          const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
+
+          function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+          }
+
+          const interval = setInterval(function() {
+            const timeLeft = animationEnd - Date.now();
+            if (timeLeft <= 0) return clearInterval(interval);
+
+            const particleCount = 50 * (timeLeft / duration);
+            confetti({
+              ...defaults, particleCount,
+              origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+              colors: ['#ff4d6d', '#ffb3c6', '#ffffff']
+            });
+            confetti({
+              ...defaults, particleCount,
+              origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+              colors: ['#ff4d6d', '#ffb3c6', '#ffffff']
+            });
+          }, 250);
+        }
+        // ----------------------------------
+
         finalDecision.classList.remove('active');
         setTimeout(() => { successScreen.classList.add('active'); }, 500);
       }
