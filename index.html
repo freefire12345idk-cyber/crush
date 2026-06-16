@@ -45,7 +45,11 @@
     <canvas id="threejs-canvas"></canvas>
     <!-- Dark Romantic Gradient -->
     <div class="background-gradient"></div>
-    <!-- 3D Spline Model (Initial Journey) -->
+    <!-- Mobile Fallback Video -->
+    <video id="main-mobile-video" class="mobile-video-bg" autoplay loop muted playsinline>
+      <source src="videos/Robot_waving_hello_with_flowers_202606170428.mp4" type="video/mp4">
+    </video>
+    <!-- 3D Spline Model (Initial Journey - Desktop) -->
     <div class="spline-container" id="main-spline">
       <spline-viewer url="https://prod.spline.design/s-5Ld2GaJFUcZQAb/scene.splinecode" loading="eager"></spline-viewer>
       <!-- Mask to hide Spline Logo -->
@@ -140,7 +144,18 @@
 
   <!-- Final Decision Overlay -->
   <div id="final-decision" class="hidden-ui">
-    <!-- Loading Screen (Hides WebGL initialization jitter) -->
+    <!-- Mobile Fallback Video -->
+    <video id="final-mobile-video" class="mobile-video-bg" autoplay loop muted playsinline>
+      <source src="videos/Robot_asks_to_be_girlfriend_202606170422.mp4" type="video/mp4">
+    </video>
+
+    <!-- Mobile HTML Buttons (Hidden on Desktop) -->
+    <div id="mobile-decision-buttons">
+      <button id="mobile-btn-yes" class="mobile-btn glowing-btn">YES 💖</button>
+      <button id="mobile-btn-no" class="mobile-btn ghost-btn">NO 💔</button>
+    </div>
+
+    <!-- Loading Screen (Hides WebGL initialization jitter on Desktop) -->
     <div id="spline-loading" class="spline-loading">
       <h2 class="glowing-text">Preparing a surprise for you... 💖</h2>
     </div>

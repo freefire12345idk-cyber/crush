@@ -379,6 +379,58 @@ button, .swiper {
   100% { transform: translate(-50%, -150%) scale(0.5); opacity: 0; }
 }
 
+/* --- Mobile Video & Buttons (Hidden on Desktop) --- */
+.mobile-video-bg {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 0;
+}
+
+#mobile-decision-buttons {
+  display: none;
+  position: absolute;
+  bottom: 8%;
+  left: 0;
+  width: 100%;
+  justify-content: center;
+  gap: 20px;
+  z-index: 20;
+}
+
+.mobile-btn {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 15px 35px;
+  border-radius: 50px;
+  border: none;
+  outline: none;
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='48' viewport='0 0 100 100' style='fill:black;font-size:24px;'><text y='50%'>💖</text></svg>") 16 0, pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mobile-btn:active {
+  transform: scale(0.95);
+}
+
+.glowing-btn {
+  background: #ff4d6d;
+  color: #fff;
+  box-shadow: 0 0 20px rgba(255, 77, 109, 0.6);
+}
+
+.ghost-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffb3c6;
+  border: 2px solid rgba(255, 179, 198, 0.5);
+  backdrop-filter: blur(5px);
+}
+
 @media (max-width: 768px) {
   .hero-title { font-size: 4rem; }
   .final-question { font-size: 2.5rem; }
@@ -391,14 +443,15 @@ button, .swiper {
     background: rgba(20, 20, 20, 0.85) !important;
   }
 
-  #main-spline {
-    pointer-events: none; /* Prevents scroll thumb from waking up raycaster */
+  /* --- Mobile Fallback Swap --- */
+  .spline-container {
+    display: none !important; /* Completely kill WebGL on mobile */
   }
-  
-  /* Zoom out the 3D models so hands don't get cut off on narrow screens */
-  spline-viewer {
-    transform: scale(0.80);
-    transform-origin: center bottom;
+  .mobile-video-bg {
+    display: block; /* Show ultra-smooth MP4 videos */
+  }
+  #mobile-decision-buttons {
+    display: flex; /* Show actual HTML buttons since 3D is gone */
   }
 }
 

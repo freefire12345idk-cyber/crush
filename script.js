@@ -230,6 +230,8 @@ async function saveResponseToSupabase(response) {
 }
 
 function initInteractions() {
+  const isMobile = window.innerWidth < 768;
+
   // Global Loader Logic
   const globalLoader = document.getElementById('global-loader');
   const mainSplineViewer = document.querySelector('#main-spline spline-viewer');
@@ -240,10 +242,15 @@ function initInteractions() {
     setTimeout(() => { globalLoader.style.display = 'none'; }, 1000);
   };
 
-  if (mainSplineViewer) {
-    mainSplineViewer.addEventListener('load', hideLoader);
+  if (isMobile) {
+    // Hide loader immediately on mobile since video handles itself
+    setTimeout(hideLoader, 500); 
+  } else {
+    if (mainSplineViewer) {
+      mainSplineViewer.addEventListener('load', hideLoader);
+    }
+    setTimeout(hideLoader, 6000); // Fallback to ensure loader doesn't hang forever
   }
-  setTimeout(hideLoader, 6000); // Fallback to ensure loader doesn't hang forever
 
   const bgMusic = document.getElementById('background-music');
   document.addEventListener('click', () => {
@@ -293,26 +300,32 @@ function initInteractions() {
         const mainSpline = document.getElementById('main-spline');
         if (mainSpline) mainSpline.style.display = 'none';
         
-        // Show the final decision container (which currently only shows the Loading Screen)
+        // Show the final decision container
         finalDecision.classList.add('active');
         
-        // Wait 3.5 seconds for WebGL to compile shaders and finish its glitchy zoom-in
-        setTimeout(() => {
-           // Fade out loading screen
-           if(loadingScreen) loadingScreen.style.opacity = '0';
-           
-           // Fade in the now-stable 3D robot
-           gsap.fromTo(finalSplineContainer, { opacity: 0 }, { opacity: 1, duration: 1.5 });
-           
-           // Clean up loading screen
-           setTimeout(() => { if(loadingScreen) loadingScreen.style.display = 'none'; }, 1000);
-        }, 3500);
+        if (isMobile) {
+           if (loadingScreen) loadingScreen.style.display = 'none';
+        } else {
+           // Wait 3.5 seconds for WebGL to compile shaders and finish its glitchy zoom-in
+           setTimeout(() => {
+              // Fade out loading screen
+              if(loadingScreen) loadingScreen.style.opacity = '0';
+              
+              // Fade in the now-stable 3D robot
+              gsap.fromTo(finalSplineContainer, { opacity: 0 }, { opacity: 1, duration: 1.5 });
+              
+              // Clean up loading screen
+              setTimeout(() => { if(loadingScreen) loadingScreen.style.display = 'none'; }, 1000);
+           }, 3500);
+        }
       }
     });
   });
 
   // Strict Mathematical Hit Testing (No HTML Overlays required)
   document.addEventListener('mouseup', async (e) => {
+    if (window.innerWidth < 768) return; // Completely ignore desktop hit-testing on mobile
+
     // Only intercept if we are on the final decision screen
     if (!finalDecision.classList.contains('active')) return;
 
@@ -329,34 +342,7 @@ function initInteractions() {
         await saveResponseToSupabase('Yes');
         for (let i = 0; i < 60; i++) { createExplosionHeart(); }
         
-        // --- Confetti Explosion Effect ---
-        if (typeof confetti !== 'undefined') {
-          const duration = 5 * 1000;
-          const animationEnd = Date.now() + duration;
-          const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
-
-          function randomInRange(min, max) {
-            return Math.random() * (max - min) + min;
-          }
-
-          const interval = setInterval(function() {
-            const timeLeft = animationEnd - Date.now();
-            if (timeLeft <= 0) return clearInterval(interval);
-
-            const particleCount = 50 * (timeLeft / duration);
-            confetti({
-              ...defaults, particleCount,
-              origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-              colors: ['#ff4d6d', '#ffb3c6', '#ffffff']
-            });
-            confetti({
-              ...defaults, particleCount,
-              origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-              colors: ['#ff4d6d', '#ffb3c6', '#ffffff']
-            });
-          }, 250);
-        }
-        // ----------------------------------
+        triggerConfetti();
 
         finalDecision.classList.remove('active');
         setTimeout(() => { successScreen.classList.add('active'); }, 500);
@@ -368,6 +354,25 @@ function initInteractions() {
       }
     }
   }, true); // Use capture phase to intercept before Spline consumes it
+
+  // Mobile HTML Buttons
+  const mobileBtnYes = document.getElementById('mobile-btn-yes');
+  const mobileBtnNo = document.getElementById('mobile-btn-no');
+
+  if (mobileBtnYes && mobileBtnNo) {
+    mobileBtnYes.addEventListener('click', async () => {
+      await saveResponseToSupabase('Yes');
+      for (let i = 0; i < 60; i++) { createExplosionHeart(); }
+      triggerConfetti();
+      finalDecision.classList.remove('active');
+      setTimeout(() => { successScreen.classList.add('active'); }, 500);
+    });
+
+    mobileBtnNo.addEventListener('click', async () => {
+      await saveResponseToSupabase('No');
+      alert("Okay fine...  ");
+    });
+  }
 
   // Heart Trail Effect
   let lastHeartTime = 0;
@@ -423,8 +428,37 @@ function createExplosionHeart() {
     y: ty,
     opacity: 0,
     scale: Math.random() * 2 + 1,
-    duration: 1.5 + Math.random(),
-    ease: 'power3.out',
+    duration: Math.random() * 1.5 + 0.5,
+    ease: 'power2.out',
     onComplete: () => heart.remove()
   });
+}
+
+function triggerConfetti() {
+  if (typeof confetti !== 'undefined') {
+    const duration = 5 * 1000;
+    const animationEnd = Date.now() + duration;
+    const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
+
+    function randomInRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    const interval = setInterval(function() {
+      const timeLeft = animationEnd - Date.now();
+      if (timeLeft <= 0) return clearInterval(interval);
+
+      const particleCount = 50 * (timeLeft / duration);
+      confetti({
+        ...defaults, particleCount,
+        origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+        colors: ['#ff4d6d', '#ffb3c6', '#ffffff']
+      });
+      confetti({
+        ...defaults, particleCount,
+        origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+        colors: ['#ff4d6d', '#ffb3c6', '#ffffff']
+      });
+    }, 250);
+  }
 }
